@@ -1,0 +1,13 @@
+{
+  "grsai_host": "https://grsai.dakka.com.cn",
+  "grsai_api_key": "your_api_key_here",
+  "default_model": "nano-banana-2",
+  "urls_base64_mode": "data_url",
+  "webhook_url": "",
+  "httpx_trust_env": true,
+  "tls_verify": true,
+  "timeout_sec": 60,
+  "market_insight_ttl_sec": 1800,
+  "market_fetch_timeout_sec": 20,
+  "market_max_items": 6
+}

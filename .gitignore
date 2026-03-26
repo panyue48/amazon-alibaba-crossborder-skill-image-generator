@@ -1,0 +1,33 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Local secrets / env
+.env
+.env.*
+webapp/config.local.json
+
+# Runtime artifacts
+webapp/runtime/*.log
+webapp/runtime/skill_state.json
+
+# Docs markdown: keep only startup guide
+docs/*.md
+!docs/nanobanana-webapp-配置与启动.md
+
+# Keep runtime directory structure
+!webapp/runtime/.gitkeep

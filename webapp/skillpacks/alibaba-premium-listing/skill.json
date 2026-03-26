@@ -1,0 +1,33 @@
+{
+  "id": "alibaba-premium-listing",
+  "name": "alibaba-premium-listing",
+  "display_name": "Alibaba 国际站 B2B Skill",
+  "platform": "alibaba",
+  "site_name": "Alibaba Showroom",
+  "description": "面向 Alibaba.com 国际站的商品主图、详情页卖点图与 B2B 采购展示图。强调 OEM / MOQ / 材质 / 工艺表达。",
+  "positioning": "面向 Alibaba.com 国际站的 B2B 商品视觉，强调可信供应链感、规格信息感与批发商业氛围。",
+  "default_category_id": "electronics",
+  "default_keywords": [
+    "factory direct",
+    "oem odm",
+    "spec-driven",
+    "global sourcing"
+  ],
+  "platform_rules": [
+    "画面要兼顾产品质感与 B2B 商务感，适合采购商快速判断材质、工艺和应用场景。",
+    "可以适度加入模块化信息区，突出 MOQ、材质、规格、包装或 OEM 能力。",
+    "风格偏国际贸易展示页，不要太消费娱乐化。",
+    "重点强调稳定供货、专业制造、细节工艺和可定制属性。 "
+  ],
+  "creative_overrides": {
+    "hero": "主图风格偏国际站头图，主体清晰、工业感干净、规格感明确。",
+    "infographic": "适合加入 MOQ、Material、Size、OEM/ODM、Packaging 等英文信息模块。",
+    "lifestyle": "结合工厂、仓储、办公采购或真实应用场景，体现专业供应链与落地使用场景。"
+  },
+  "negative_constraints": [
+    "不要出现夸张零售促销风字体和杂乱贴纸元素。",
+    "不要生成不可信的虚假认证标识或证书截图。",
+    "不要把 B2B 详情图做成低质社媒海报。",
+    "不要生成中文大段文案或乱码文字。"
+  ]
+}

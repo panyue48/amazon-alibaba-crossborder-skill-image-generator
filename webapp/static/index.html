@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NanoBanana 电商 Skill 工作台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .glass{background:rgba(255,255,255,.78);backdrop-filter:blur(14px)}
+    </style>
+    <script defer src="/static/app.js"></script>
+  </head>
+  <body class="min-h-screen bg-[radial-gradient(circle_at_top_left,_#dbeafe,_transparent_32%),radial-gradient(circle_at_top_right,_#ede9fe,_transparent_28%),linear-gradient(180deg,_#f8fafc,_#eef2ff)] text-slate-900">
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <header class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/80 px-3 py-1 text-xs text-indigo-700 shadow-sm">
+            <span>Amazon / Alibaba 国际站</span><span class="h-1 w-1 rounded-full bg-indigo-400"></span><span>NanoBanana 电商运营 Skill 工作台</span>
+          </div>
+          <h1 class="mt-3 text-3xl font-bold tracking-tight">实时热卖参考 + 动态 Skill 提示词 + 图片生成</h1>
+          <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">选择平台 Skill 和商品品类，实时抓取公开热卖样图与关键词，自动更新提示词，再结合你上传的商品原图生成上架图。</p>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-xs text-slate-600 shadow-sm">
+          <div>生成接口：<code class="font-mono">/v1/draw/nano-banana</code></div>
+          <div class="mt-1">热卖参考：<code class="font-mono">/api/skills/refresh</code></div>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1.25fr_0.95fr]">
+        <section class="glass rounded-3xl border border-white/60 p-5 shadow-lg shadow-slate-200/60">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-lg font-semibold">操作面板</h2>
+              <p class="mt-1 text-sm text-slate-500">先刷新热卖参考，再根据预览提示词生成图片；也支持手动修改提示词。</p>
+            </div>
+            <span id="statusBadge" class="hidden rounded-full bg-slate-900 px-3 py-1 text-xs text-white">生成中</span>
+          </div>
+
+          <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="flex items-center justify-between gap-4">
+              <div><div class="text-sm font-semibold">API Key（运行时输入）</div><div class="mt-1 text-xs text-slate-500">仅发送到本地服务，不会写进页面源码。</div></div>
+              <div class="text-xs text-slate-500">Host：<span id="hostText" class="font-mono text-slate-800">-</span></div>
+            </div>
+            <div class="mt-3 flex gap-2">
+              <input id="apiKey" type="password" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none ring-indigo-500 focus:ring-2" placeholder="输入你的 Grsai API Key" autocomplete="off" />
+              <button id="toggleKeyBtn" type="button" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm hover:bg-slate-50">显示</button>
+            </div>
+            <div class="mt-2 flex items-center justify-between">
+              <label class="flex items-center gap-2 text-sm text-slate-700"><input id="rememberKey" type="checkbox" class="h-4 w-4 rounded border-slate-300" />记住到浏览器</label>
+              <button id="clearKeyBtn" type="button" class="text-sm font-medium text-slate-600 hover:text-rose-600">清除</button>
+            </div>
+          </div>
+
+          <div class="mt-5">
+            <div class="mb-2 flex items-center justify-between">
+              <div><h3 class="text-sm font-semibold">1. 选择平台 Skill</h3><p class="mt-1 text-xs text-slate-500">不同 Skill 会切换平台视觉偏好、热卖参考来源和文案组织方式。</p></div>
+              <span id="selectedSkillMeta" class="text-xs text-slate-500">-</span>
+            </div>
+            <div id="skillCards" class="grid grid-cols-1 gap-3 sm:grid-cols-2"></div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div><label class="text-sm font-medium">商品品类</label><select id="category" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"></select></div>
+            <div><label class="text-sm font-medium">创意类型</label><select id="creativeMode" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"></select></div>
+            <div><label class="text-sm font-medium">检索关键词</label><input id="searchKeywords" type="text" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none ring-indigo-500 focus:ring-2" placeholder="例如：robot vacuum / toy car / niacinamide serum，支持多个词用逗号分隔" /></div>
+            <div><label class="text-sm font-medium">商品名称 / 核心款式</label><input id="productName" type="text" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none ring-indigo-500 focus:ring-2" placeholder="例如：316 不锈钢保温杯 / Magnetic wireless charger" /></div>
+            <div><label class="text-sm font-medium">补充风格</label><input id="styleNotes" type="text" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none ring-indigo-500 focus:ring-2" placeholder="例如：高级灰、欧美家居、工业商务、科技极简" /></div>
+          </div>
+
+          <div class="mt-4"><label class="text-sm font-medium">卖点 / 功能 / 规格</label><textarea id="sellingPoints" class="mt-2 h-24 w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm outline-none ring-indigo-500 focus:ring-2" placeholder="例如：真空保温 12 小时 / BPA free / OEM 支持 / MOQ 100"></textarea></div>
+
+          <div class="mt-4 flex flex-col gap-3 rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/60 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div><div class="text-sm font-semibold text-indigo-900">2. 实时刷新 Skill 热卖参考</div><div class="mt-1 text-xs text-indigo-700">抓取公开热卖页，更新当前 Skill 的关键词、参考标题和提示词预览。</div></div>
+            <div class="flex flex-wrap items-center gap-3">
+              <label class="flex items-center gap-2 text-sm text-slate-700"><input id="forceRefresh" type="checkbox" class="h-4 w-4 rounded border-slate-300" />强制刷新</label>
+              <button id="refreshSkillBtn" type="button" class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500">更新 Skill</button>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div class="flex items-center justify-between"><label class="text-sm font-medium">最终提示词（可编辑）</label><button id="copyPromptBtn" type="button" class="text-xs font-medium text-slate-500 hover:text-indigo-600">复制提示词</button></div>
+            <textarea id="prompt" class="mt-2 h-52 w-full resize-none rounded-2xl border border-slate-200 bg-white p-4 text-sm leading-6 outline-none ring-indigo-500 focus:ring-2" placeholder="点击“更新 Skill”后，这里会自动生成当前平台和品类的图片提示词。你也可以手动修改。"></textarea>
+          </div>
+
+          <div class="mt-5">
+            <label class="text-sm font-medium">3. 上传商品原图（可多张）</label>
+            <div id="dropzone" class="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-white p-6 text-sm text-slate-600 transition hover:border-indigo-300">
+              <div class="font-medium">点击选择 / 拖拽商品图到这里</div><div class="mt-1 text-xs text-slate-500">支持 PNG / JPG / WEBP，多张会一起作为 NanoBanana 参考图</div><input id="fileInput" class="hidden" type="file" accept="image/*" multiple />
+            </div>
+            <div id="thumbs" class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"></div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div><label class="text-sm font-medium">比例</label><select id="aspectRatio" class="mt-2 w-full rounded-xl border border-slate-200 bg-white p-2 text-sm"><option value="auto" selected>auto</option><option value="1:1">1:1</option><option value="16:9">16:9</option><option value="9:16">9:16</option><option value="4:3">4:3</option><option value="3:4">3:4</option><option value="21:9">21:9</option></select></div>
+            <div><label class="text-sm font-medium">清晰度</label><select id="imageSize" class="mt-2 w-full rounded-xl border border-slate-200 bg-white p-2 text-sm"><option value="1K" selected>1080p / 1K</option><option value="2K">2K</option><option value="4K">4K</option></select></div>
+            <div><label class="text-sm font-medium">模型</label><select id="model" class="mt-2 w-full rounded-xl border border-slate-200 bg-white p-2 text-sm"><option value="nano-banana-2" selected>nano-banana-2</option><option value="nano-banana-fast">nano-banana-fast</option><option value="nano-banana">nano-banana</option><option value="nano-banana-pro">nano-banana-pro</option><option value="nano-banana-pro-vt">nano-banana-pro-vt</option><option value="nano-banana-pro-cl">nano-banana-pro-cl</option><option value="nano-banana-pro-vip">nano-banana-pro-vip</option><option value="nano-banana-pro-4k-vip">nano-banana-pro-4k-vip</option></select></div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between">
+            <label class="flex items-center gap-2 text-sm text-slate-700"><input id="shutProgress" type="checkbox" class="h-4 w-4 rounded border-slate-300" />关闭进度回传（shutProgress）</label>
+            <button id="generateBtn" class="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50">4. 生成上架图</button>
+          </div>
+
+          <div class="mt-4 rounded-2xl border border-slate-200 bg-white p-4 text-xs text-slate-600">
+            <div class="font-medium text-slate-800">调试与状态</div>
+            <div class="mt-2">Task ID：<span id="taskId" class="font-mono text-slate-900">-</span></div>
+            <div class="mt-1">状态：<span id="taskStatus" class="font-mono text-slate-900">-</span><span id="progress" class="ml-2 text-slate-500"></span></div>
+            <div class="mt-1">Skill 刷新：<span id="refreshMeta" class="text-slate-700">未刷新</span></div>
+            <div id="warningBox" class="mt-3 hidden rounded-xl bg-amber-50 px-3 py-2 text-amber-700"></div>
+            <div id="errBox" class="mt-3 hidden rounded-xl bg-rose-50 px-3 py-2 text-rose-700"></div>
+          </div>
+        </section>
+
+        <section class="grid gap-6">
+          <div class="glass rounded-3xl border border-white/60 p-5 shadow-lg shadow-slate-200/60">
+            <div class="flex items-center justify-between">
+              <div><h2 class="text-lg font-semibold">实时热卖参考</h2><p class="mt-1 text-sm text-slate-500">展示最新抓取到的同类样图、关键词和参考链接。</p></div>
+              <a id="sourceLink" href="#" target="_blank" rel="noreferrer" class="hidden text-sm font-medium text-indigo-600 hover:text-indigo-500">查看源页面</a>
+            </div>
+            <div class="mt-4 rounded-2xl border border-slate-200 bg-white p-4"><div class="text-xs uppercase tracking-[0.2em] text-slate-400">Source</div><div id="sourceMeta" class="mt-2 text-sm text-slate-700">还没有刷新热卖参考</div></div>
+            <div class="mt-4"><div class="text-sm font-medium">热卖关键词</div><div id="keywordChips" class="mt-3 flex flex-wrap gap-2"><span class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500">等待刷新</span></div></div>
+            <div class="mt-5"><div class="text-sm font-medium">样图与链接</div><div id="marketCards" class="mt-3 grid grid-cols-1 gap-3"></div></div>
+          </div>
+
+          <div class="glass rounded-3xl border border-white/60 p-5 shadow-lg shadow-slate-200/60">
+            <div class="flex items-center justify-between">
+              <div><h2 class="text-lg font-semibold">生成结果</h2><p class="mt-1 text-sm text-slate-500">生成完成后展示预览、原始 URL 和下载入口。</p></div>
+              <div class="flex items-center gap-2">
+                <a id="downloadBtn" class="hidden rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50" href="#">下载</a>
+                <button id="copyUrlBtn" class="hidden rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50">复制链接</button>
+              </div>
+            </div>
+            <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white"><div id="previewWrap" class="flex min-h-[420px] items-center justify-center p-4"><div class="text-center text-sm text-slate-500">生成结果会显示在这里</div></div></div>
+            <div class="mt-4 rounded-2xl border border-slate-200 bg-white p-4 text-xs text-slate-600">结果 URL：<span id="resultUrl" class="break-all font-mono text-slate-800">-</span></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

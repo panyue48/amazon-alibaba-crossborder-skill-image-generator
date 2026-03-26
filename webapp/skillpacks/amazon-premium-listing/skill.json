@@ -1,0 +1,33 @@
+{
+  "id": "amazon-premium-listing",
+  "name": "amazon-premium-listing",
+  "display_name": "Amazon 高端上架 Skill",
+  "platform": "amazon",
+  "site_name": "Amazon Best Sellers",
+  "description": "面向 Amazon 的高端商品主图、详情页卖点图和场景图。强调美国站热卖审美、简洁构图、强转化表达。",
+  "positioning": "面向 Amazon Listing 的 premium commercial image，偏美国站热卖主图与详情页风格。",
+  "default_category_id": "home-kitchen",
+  "default_keywords": [
+    "premium detail",
+    "conversion-first",
+    "clean composition",
+    "amazon-ready"
+  ],
+  "platform_rules": [
+    "优先保证产品主体居中或明确聚焦，适合电商首图浏览。",
+    "颜色层次要干净，避免过度花哨和廉价感背景。",
+    "卖点标签要短、准、商务化，适合英文消费市场阅读。",
+    "突出材质、功能结构和使用收益，画面更像高端商业摄影而不是概念海报。 "
+  ],
+  "creative_overrides": {
+    "hero": "使用更纯净的背景、更强的轮廓光和更明确的产品焦点，适合主图/封面。",
+    "infographic": "保留主体同时加入 3-5 组简短英文卖点标签与局部放大细节。",
+    "lifestyle": "把产品自然放进欧美家庭/办公/运动场景，突出真实使用感和高级生活方式。"
+  },
+  "negative_constraints": [
+    "不要生成中文文案或无法辨认的乱码文案。",
+    "不要出现竞品品牌 Logo、水印、平台 UI 截图。",
+    "不要把产品改造成与原图不符的形态或材质。",
+    "不要过度夸张的霓虹、赛博或低质 AI 痕迹。"
+  ]
+}
